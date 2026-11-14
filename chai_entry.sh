@@ -27,7 +27,7 @@ else
 	elif [ -f /mnt/SDCARD/spruce/spruce ]; then
 		CHAI_RETROFIT_PROFILE="Spruce"
 	elif [[ "$CFW_NAME" = "muOS" ]]; then
-		CHAI_RETROFIT_PROFILE="muOS"
+		CHAI_RETROFIT_PROFILE="MustardOS"
 	elif [[ "$CFW_NAME" = "ROCKNIX" ]]; then
 		CHAI_RETROFIT_PROFILE="ROCKNIX"
 	elif [ -f /mnt/SDCARD/.system/version.txt ] && grep -q "NextUI" /mnt/SDCARD/.system/version.txt; then

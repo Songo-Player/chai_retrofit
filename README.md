@@ -68,13 +68,13 @@ chai runs it in the background on every volume change, including presses at the 
 on_volume.sh VOLUME MAX
 ```
 
-`MAX` is usually 100. It's higher when the CFW allows volume boost (eg: 200 with muOS overdrive), so scale `VOLUME` by `MAX` rather than assuming a percent. Subscriber scripts should be quick, since holding a volume key sends many updates. Subscriptions don't survive a reboot.
+`MAX` is usually 100. It's higher when the CFW allows volume boost (eg: 200 with MustardOS overdrive), so scale `VOLUME` by `MAX` rather than assuming a percent. Subscriber scripts should be quick, since holding a volume key sends many updates. Subscriptions don't survive a reboot.
 
 ### Supported CFWs
 
 | Profile | CFW | Notes |
 |---|---|---|
-| `muOS` | muOS | Andromeda (2606) and older |
+| `MustardOS` | MustardOS | Andromeda (2606) and older |
 | `knulli` | Knulli | Scarab and older (batocera-* era) |
 | `ROCKNIX` | ROCKNIX | |
 | `NextUI` | NextUI | |
@@ -121,14 +121,14 @@ Here is a rough draft of the methods I'm proposing for CHAI implementation. Note
 
 ## What does CHAI look like?
 
-CHAI should be using host cfw functions as much as possible, implementing CHAI for any given cfw should be fairly straight forward. Here is a partial example for muOS.
+CHAI should be using host cfw functions as much as possible, implementing CHAI for any given cfw should be fairly straight forward. Here is a partial example for MustardOS.
 
 ```sh
 #!/bin/sh
-# chai for muOS 2606.0 "Andromeda"
+# chai for MustardOS 2606.0 "Andromeda"
 #
 # Install: /opt/muos/script/system/chai.sh, symlinked to /usr/bin/chai
-# Volume subscribers and idle suppression need the small muOS patches in
+# Volume subscribers and idle suppression need the small MustardOS patches in
 # muos-andromeda.patch, next to this file.
 
 . /opt/muos/script/var/base.sh
@@ -137,7 +137,7 @@ CHAI should be using host cfw functions as much as possible, implementing CHAI f
 
 CHAI_VOL_SUBS="$MUOS_RUN_DIR/chai/volume_subscribers"
 
-# muOS brightness is already 0-255 on every Andromeda device (device/common/config/screen/bright)
+# MustardOS brightness is already 0-255 on every Andromeda device (device/common/config/screen/bright)
 chai_get_brightness() {
 	# bright.sh creates /tmp/mux_blank when the screen is off
 	[ -e /tmp/mux_blank ] && echo 0 && return
@@ -158,7 +158,7 @@ chai_get_battery_status() {
 	[ "$(cat "$MUOS_RUN_DIR/battery/charging")" = "0" ] && echo 0 || echo 1
 }
 
-# Uses muOS's own caffeine flag. hotkey.sh's SLEEP() already checks it, which
+# Uses MustardOS's own caffeine flag. hotkey.sh's SLEEP() already checks it, which
 # blocks idle sleep and lid-close sleep. The patch adds the idle screen dim.
 chai_set_idle_suppression() {
 	case "$1" in
@@ -190,7 +190,7 @@ chai_notify_volume() {
 	done <"$CHAI_VOL_SUBS"
 }
 
-# /run/muos/storage paths are bind-mounted by muOS to whichever SD card holds them
+# /run/muos/storage paths are bind-mounted by MustardOS to whichever SD card holds them
 chai_get_path() {
 	case "$1" in
 		userdata) echo "$MUOS_STORE_DIR" ;;
