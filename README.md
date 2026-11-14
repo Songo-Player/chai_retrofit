@@ -3,6 +3,8 @@ I made a proposal for a standardized way cfw expose controls/events to applicati
 
 If chai_retrofit is being used on cfw that actually does implement CHAI then chai_retrofit gets ignored and defers to the CFW. The original proposal doc is at the bottom of this README.
 
+Edit: Don't feel pressure to use this, it can just be educational, I'm thrilled if this saves anyone some time digging through firmware code
+
 ## How to use it
 
 ### 1. Ship it with your app
