@@ -81,6 +81,8 @@ on_volume.sh VOLUME MAX
 
 Each profile's `chai.sh` overrides only what its CFW does differently and falls back to `default/chai.sh` for the rest. To add a CFW, copy an existing profile folder, override the functions you need, and add a detection case to `chai_entry.sh`.
 
+---
+
 ## Help me kill chai_retrofit
 Chai retrofit has to do some invasive stuff like mount binding over volume scripts or temporarily writing over cfw config files, its ugly and it feels bad. If CFW projects implement CHAI then these ugly parts fit gracefully in the cfw without being forced. If you maintain/contribute to a cfw project let me know how we can make CHAI a better interface and implement it yourself so app devs aren't tempted to use chai_retrofit
 
