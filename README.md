@@ -12,7 +12,7 @@ Edit: Don't feel pressure to use this, it can just be educational, I'm thrilled 
 Copy this repo into your port's folder, or add it as a git submodule:
 
 ```sh
-git submodule add git@github.com:keymaster777/chai_retrofit.git yourport/chai_retrofit
+git submodule add git@github.com:Songo-Player/chai_retrofit.git yourport/chai_retrofit
 ```
 
 If you zip your port up, skip the submodule's `.git` file. Keep the executable bits on `bin/chai`, the `*/vol_listener` files and `NextUI/backlight`.
