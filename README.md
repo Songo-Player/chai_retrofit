@@ -25,6 +25,7 @@ Source `chai_entry.sh` before starting your app, and call `chai_retrofit_teardow
 #!/bin/bash
 source "$controlfolder/control.txt"   # PortMaster, sets CFW_NAME
 
+CHAI_RETRO_DIR="$GAMEDIR/chai_retrofit"   # optional in bash, needed in other shells
 source "$GAMEDIR/chai_retrofit/chai_entry.sh"
 
 ./your_app

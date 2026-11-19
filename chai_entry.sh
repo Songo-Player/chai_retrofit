@@ -16,19 +16,27 @@
 # Call chai_retrofit_teardown when the app exits. It undoes the profile's
 # setup, and does nothing when the CFW has its own chai.
 
-CHAI_RETRO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# This folder. Sourced files can't find their own path outside bash (busybox
+# sh leaves BASH_SOURCE empty, which resolved to the caller's working
+# directory), so a launcher can set CHAI_RETRO_DIR first.
+if [ -z "$CHAI_RETRO_DIR" ] || [ ! -f "$CHAI_RETRO_DIR/chai_entry.sh" ]; then
+	CHAI_RETRO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+fi
+if [ ! -f "$CHAI_RETRO_DIR/chai_entry.sh" ]; then
+	echo "CHAI: couldn't find chai_retrofit (got ${CHAI_RETRO_DIR}), set CHAI_RETRO_DIR before sourcing chai_entry.sh" >&2
+fi
 
 if command -v chai >/dev/null 2>&1; then
 	CHAI_RETROFIT_PROFILE="native"
 else
-	if [[ "$CFW_NAME" = "knulli" ]]; then
+	if [ "$CFW_NAME" = "knulli" ]; then
 		CHAI_RETROFIT_PROFILE="knulli"
 	# Moved spruce up because its reported as other cfw occasionally in portmaster
 	elif [ -f /mnt/SDCARD/spruce/spruce ]; then
 		CHAI_RETROFIT_PROFILE="Spruce"
-	elif [[ "$CFW_NAME" = "muOS" ]]; then
+	elif [ "$CFW_NAME" = "muOS" ]; then
 		CHAI_RETROFIT_PROFILE="MustardOS"
-	elif [[ "$CFW_NAME" = "ROCKNIX" ]]; then
+	elif [ "$CFW_NAME" = "ROCKNIX" ]; then
 		CHAI_RETROFIT_PROFILE="ROCKNIX"
 	elif [ -f /mnt/SDCARD/.system/version.txt ] && grep -q "NextUI" /mnt/SDCARD/.system/version.txt; then
 		CHAI_RETROFIT_PROFILE="NextUI"

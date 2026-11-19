@@ -15,7 +15,22 @@ chai_spruce_to_255() {
 	echo "$V"
 }
 
+# Allwinner devices (TrimUI Brick, Smart Pro, Anbernic H700) drive the panel
+# through /dev/disp, as spruce's own set_backlight does. NextUI's helper does
+# the same ioctl without spruce's python, fast enough for Songo's per-frame
+# fades, and reads back the real value (0 after a fade-out). It exits non-zero
+# without /dev/disp, falling through to the code below.
+SPRUCE_DISP_BACKLIGHT="$CHAI_RETRO_DIR/NextUI/backlight"
+
+chai_set_brightness() {
+	case "$1" in '' | *[!0-9]*) return 1 ;; esac
+	[ -e /dev/disp ] && "$SPRUCE_DISP_BACKLIGHT" set "$1" 2>/dev/null && return 0
+	chai_default_set_brightness "$1"
+}
+
 chai_get_brightness() {
+	[ -e /dev/disp ] && "$SPRUCE_DISP_BACKLIGHT" get 2>/dev/null && return 0
+
 	# Spruce's device config points at the panel's sysfs brightness file
 	if [ -n "$DEVICE_BRIGHTNESS_PATH" ] && [ -f "$DEVICE_BRIGHTNESS_PATH" ]; then
 		RAW=$(cat "$DEVICE_BRIGHTNESS_PATH" 2>/dev/null)
