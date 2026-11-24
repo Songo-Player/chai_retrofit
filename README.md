@@ -19,11 +19,11 @@ If you zip your port up, skip the submodule's `.git` file. Keep the executable b
 
 ### 2. Source it from your launch script
 
-Source `chai_entry.sh` before starting your app, and call `chai_retrofit_teardown` after it exits. It's written for PortMaster launchers and reads `CFW_NAME` from PortMaster's `control.txt`.
+Source `chai_entry.sh` before starting your app, and call `chai_retrofit_teardown` after it exits. It works from PortMaster launchers and from a CFW's own app launchers: it recognizes the CFW by files the CFW ships (version files, `/etc/os-release`), not by PortMaster's `CFW_NAME`.
 
 ```bash
 #!/bin/bash
-source "$controlfolder/control.txt"   # PortMaster, sets CFW_NAME
+source "$controlfolder/control.txt"   # PortMaster, sets GAMEDIR etc. (not needed by chai)
 
 CHAI_RETRO_DIR="$GAMEDIR/chai_retrofit"   # optional in bash, needed in other shells
 source "$GAMEDIR/chai_retrofit/chai_entry.sh"
@@ -77,12 +77,14 @@ on_volume.sh VOLUME MAX
 |---|---|---|
 | `MustardOS` | MustardOS | Andromeda (2606) and older |
 | `knulli` | Knulli | Scarab and older (batocera-* era) |
-| `ROCKNIX` | ROCKNIX | |
+| `ROCKNIX` | ROCKNIX, JELOS | JELOS untested |
+| `ArkOS` | ArkOS, dArkOS | Untested. Root steps use `sudo -n` (ports run as `ark`). Volume through an `amixer` wrapper; idle suppression through `processcheck.sh`. No lid or power-button handling |
+| `TrimUI` | TrimUI stock, CrossMix | Untested. Idle suppression isn't possible (MainUI is closed source). Volume from `/tmp/system/set_volume`, min/max presses not reported |
 | `NextUI` | NextUI | |
 | `Spruce` | Spruce | |
 | `default` | Anything else | Generic sysfs backlight, battery and lid sensor, and a PipeWire wrapper for volume. `get-path` isn't supported |
 
-Each profile's `chai.sh` overrides only what its CFW does differently and falls back to `default/chai.sh` for the rest. To add a CFW, copy an existing profile folder, override the functions you need, and add a detection case to `chai_entry.sh`.
+Each profile's `chai.sh` overrides only what its CFW does differently and falls back to `default/chai.sh` for the rest. To add a CFW, copy an existing profile folder, override the functions you need, and add a detection case to `_chai_detect_profile` in `chai_entry.sh` that checks for a file only that CFW ships.
 
 ---
 
