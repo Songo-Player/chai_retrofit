@@ -23,12 +23,10 @@ chai_setup() {
 # "chai_retrofit/Spruce/vol_listener" part out of view, so nothing matched and
 # every launch leaked a listener.
 _vol_listener_pids() {
-	for DIR in /proc/[0-9]*; do
-		CMD="$(tr '\0' ' ' <"$DIR/cmdline" 2>/dev/null)" || continue
-		case "$CMD" in
-			*"$VOL_LISTENER "*) echo "${DIR#/proc/}" ;;
-		esac
-	done
+	# One grep for every process: a fork for each took over a second on a Brick.
+	# The pattern goes in on stdin so grep's own command line doesn't match.
+	printf '%s\n' "$VOL_LISTENER" | grep -lF -f - /proc/[0-9]*/cmdline 2>/dev/null |
+		while IFS=/ read -r _ _ PID _; do echo "$PID"; done
 }
 
 # Kills the given processes and everything under them. A listener is a pipeline
