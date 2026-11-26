@@ -116,11 +116,17 @@ chai_default_get_battery_status() {
 
 CHAI_HALL_SENSORS="/sys/class/power_supply/axp2202-battery/hallkey /sys/devices/platform/hall-mh248/hallvalue"
 
+# busybox mount cuts the source path at the first "#" (an install in "Songo#5"
+# fails to mount), so the file is mounted from a copy in CHAI_RUN_DIR.
 chai_lid_hide() {
+	mkdir -p "$CHAI_RUN_DIR"
+	# Kept if already there: it may be mounted, and cp would empty it briefly
+	[ -s "$CHAI_RUN_DIR/hallkey" ] ||
+		cp "$CHAI_RETRO_DIR/default/hallkey" "$CHAI_RUN_DIR/hallkey" || return 1
 	for T in $CHAI_HALL_SENSORS; do
 		[ -e "$T" ] || continue
 		mountpoint -q "$T" && continue
-		mount --bind "$CHAI_RETRO_DIR/default/hallkey" "$T"
+		mount --bind "$CHAI_RUN_DIR/hallkey" "$T"
 	done
 }
 

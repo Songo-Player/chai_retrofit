@@ -31,10 +31,16 @@ chai_set_brightness() {
 chai_get_brightness() {
 	[ -e /dev/disp ] && "$SPRUCE_DISP_BACKLIGHT" get 2>/dev/null && return 0
 
-	# Spruce's device config points at the panel's sysfs brightness file
-	if [ -n "$DEVICE_BRIGHTNESS_PATH" ] && [ -f "$DEVICE_BRIGHTNESS_PATH" ]; then
-		RAW=$(cat "$DEVICE_BRIGHTNESS_PATH" 2>/dev/null)
-		MAX=$(cat "$(dirname "$DEVICE_BRIGHTNESS_PATH")/max_brightness" 2>/dev/null)
+	# Spruce's device config points at the panel's sysfs brightness file.
+	# Spruce renamed its variables during 4.5.7 development (spruceOS commit
+	# 193efee2), first released in 4.6.0; up to 4.5.6 they have the old names:
+	#   DEVICE_BRIGHTNESS_PATH   -> DEVICE_BACKLIGHT_PATH
+	#   SYSTEM_BRIGHTNESS_<step> -> SYSTEM_BACKLIGHT_LEVEL_<step>
+	# 4.5.7 builds can have either, so check the names, not spruce's version.
+	BL_PATH="${DEVICE_BACKLIGHT_PATH:-$DEVICE_BRIGHTNESS_PATH}"
+	if [ -n "$BL_PATH" ] && [ -f "$BL_PATH" ]; then
+		RAW=$(cat "$BL_PATH" 2>/dev/null)
+		MAX=$(cat "$(dirname "$BL_PATH")/max_brightness" 2>/dev/null)
 		case "$RAW" in
 			'' | *[!0-9]*) ;;
 			*) chai_spruce_to_255 "$RAW" "$MAX" && return 0 ;;
@@ -48,10 +54,17 @@ chai_get_brightness() {
 	case "$STEP" in '' | *[!0-9]*) return 1 ;; esac
 	[ "$STEP" -gt 10 ] && return 1
 
-	# Devices that define SYSTEM_BRIGHTNESS_<step> map each step to a raw
-	# backlight value
-	if [ -n "${SYSTEM_BRIGHTNESS_0+x}" ]; then
-		eval "RAW=\${SYSTEM_BRIGHTNESS_$STEP}"
+	# Some devices map each step to a raw backlight value (4.6.0 name first,
+	# then the older one)
+	if [ -n "${SYSTEM_BACKLIGHT_LEVEL_0+x}" ]; then
+		LEVEL_VAR="SYSTEM_BACKLIGHT_LEVEL_$STEP"
+	elif [ -n "${SYSTEM_BRIGHTNESS_0+x}" ]; then
+		LEVEL_VAR="SYSTEM_BRIGHTNESS_$STEP"
+	else
+		LEVEL_VAR=
+	fi
+	if [ -n "$LEVEL_VAR" ]; then
+		eval "RAW=\${$LEVEL_VAR}"
 		case "$RAW" in '' | *[!0-9]*) return 1 ;; esac
 		chai_bl_detect && [ -n "$BL_DIR" ] && MAX=$(chai_bl_max) || MAX=255
 		chai_spruce_to_255 "$RAW" "$MAX"
